@@ -9,23 +9,24 @@ struct vec2{
 
 int main(){
 	SDL_Event event;
+	printf("event size: %lu", sizeof(event));
 	bool running = true;
-	vec2 resolution = {720, 480};
+	struct vec2 resolution = {720, 480};
 	if(!SDL_Init(SDL_INIT_VIDEO)){
 		printf("Failed to init SDL3 Video: %s\n",SDL_GetError());
 		return -1;
 	}
 	SDL_Window* window = SDL_CreateWindow("springSim Window", resolution.x, resolution.y, 0b0);
-	if(window == nullptr){
+	if(window == NULL){
 		printf("Failed to create SDL3 Window: %s\n",SDL_GetError());
-		return;
+		return -1;
 	}
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, nullptr);
-	if(renderer == nullptr){
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
+	if(renderer == NULL){
 		printf("Failed to create SDL3 Renderer: %s\n",SDL_GetError());
-		return;
+		return -1;
 	}
-	float lastFrameTime = SDL_GetTicks() / 1000.0f;
+	//float lastFrameTime = SDL_GetTicks() / 1000.0f;
 
 	while(running){
 		while(SDL_PollEvent(&event)){
@@ -35,16 +36,17 @@ int main(){
 				running = false;
 		}
 
-		float t = SDL_GetTicks() / 1000.0f;
-		float dt = t - lastFrameTime;
-		lastFrameTime = t;
+		//float t = SDL_GetTicks() / 1000.0f;
+		//float dt = t - lastFrameTime;
+		//lastFrameTime = t;
 
-		SDL_SetRenderDrawColorFloat(renderer, 0.0f, 0.0f, 0.0f, 1.0f);
+		//SDL_SetRenderDrawColorFloat(renderer, 0.0f, 0.0f, 0.0f, 1.0f);
+		//SDL_SetRenderDrawColor(
 		SDL_RenderClear(renderer);
 
-		SDL_SetRenderDrawColorFloat(renderer, 1.0f, 0.0f, 0.0f, 1.0f);
-		SDL_FRect rect{0, 0, 100, 100};
-		SDL_RenderRect(renderer, &rect);
+		//SDL_SetRenderDrawColorFloat(renderer, 1.0f, 0.0f, 0.0f, 1.0f);
+		//SDL_FRect rect = {0, 0, 100, 100};
+		//SDL_RenderRect(renderer, &rect);
 
 		SDL_RenderPresent(renderer);
 	}
