@@ -30,6 +30,7 @@ resolutionX dq 720
 resolutionY dq 480
 windowPtr dq 0
 rendererPtr dq 0
+rect dd 0.0, 0.0, 100.0, 100.0
 
 section .bss
 event resb 128
@@ -64,17 +65,35 @@ _start:
 	mov [rendererPtr], rax
 
 mainLoop:
-	mov rdi, event
 pollEventLoop:
+	mov rdi, event; remember, the call below will clobber this register
 	call SDL_PollEvent wrt ..plt
 	mov esi, [event]
-	cmp esi, 0x100; quit event type
+	cmp esi, 0x100 ;event type for quit
 	je cleanup
 	cmp rax, 0 ;check if the event poll returned false -> no more events to poll
 	jne pollEventLoop
 
 	mov rdi, [rendererPtr]
+	xor rsi, rsi
+	xor rdx, rdx
+	xor rcx, rcx
+	mov r8, 255
+	call SDL_SetRenderDrawColor wrt ..plt
+
+	mov rdi, [rendererPtr]
 	call SDL_RenderClear wrt ..plt
+
+	mov rdi, [rendererPtr]
+	mov rsi, 255
+	xor rdx, rdx
+	xor rcx, rcx
+	mov r8, 255
+	call SDL_SetRenderDrawColor wrt ..plt
+
+	mov rdi, [rendererPtr]
+	mov rsi, rect
+	call SDL_RenderRect wrt ..plt
 
 	mov rdi, [rendererPtr]
 	call SDL_RenderPresent wrt ..plt
@@ -98,9 +117,7 @@ initFailed:
 	mov rsi, initFailMessage
 	mov rdx, initFailMessageLen
 	syscall
-	mov rax, 60
-	mov rdi, 1
-	syscall
+	jmp exitFailed
 
 windowCreateFailed:
 	mov rax, 1
@@ -108,9 +125,7 @@ windowCreateFailed:
 	mov rsi, windowFailMessage
 	mov rdx, windowFailMessageLen
 	syscall
-	mov rax, 60
-	mov rdi, 1
-	syscall
+	jmp exitFailed
 
 rendererCreateFailed:
 	mov rax, 1
@@ -118,6 +133,10 @@ rendererCreateFailed:
 	mov rsi, rendererFailMessage
 	mov rdx, rendererFailMessageLen
 	syscall
+	;jmp exitFailed ;will fall through to it anyway
+
+exitFailed:
 	mov rax, 60
 	mov rdi, 1
 	syscall
+
