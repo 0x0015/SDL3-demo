@@ -13,6 +13,13 @@ extern SDL_DestroyRenderer
 extern SDL_DestroyWindow
 extern SDL_Quit
 
+struc FPRect
+	.x: resd 1
+	.y: resd 1
+	.w: resd 1
+	.h: resd 1
+endstruc
+
 section .data
 ;strings
 initFailMessage db "Failed to init SDL3 video", 10, 0
@@ -30,7 +37,13 @@ resolutionX dq 720
 resolutionY dq 480
 windowPtr dq 0
 rendererPtr dq 0
-rect dd 0.0, 0.0, 100.0, 100.0
+rect:
+	istruc FPRect
+	at FPRect.x, dd 0.0
+	at FPRect.y, dd 0.0
+	at FPRect.w, dd 100.0
+	at FPRect.h, dd 100.0
+	iend
 
 section .bss
 event resb 128
